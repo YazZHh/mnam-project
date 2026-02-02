@@ -1,6 +1,9 @@
-CC = gcc -g -Wall -Werror
+CC = gcc -g -Wall 
 
-all: bin/main
+all: bin/ bin/main
+
+bin/:
+	mkdir -p bin/
 
 bin/main: bin/main.o bin/grille.o
 	$(CC) -o $@ $^

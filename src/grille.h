@@ -1,5 +1,6 @@
 #define MAX_X 100
 #define MAX_Y 100
+#define ZONE_COUNT 4
 
 typedef enum {
     ZONE_1 = 1,
@@ -22,3 +23,9 @@ typedef struct Grille {
 Grille* init_grille(int x, int y);
 
 void afficher_grille(Grille g);
+
+void afficher_zone(Grille g);
+
+Zone zoneOf(Grille g, int x, int y);
+
+Case* get_danger_case(Grille g);
