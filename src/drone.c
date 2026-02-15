@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <stdlib.h>
 #include "drone.h"
 
 Drone *init_drone(Grille *g){
