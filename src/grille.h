@@ -22,10 +22,10 @@ typedef struct Grille {
 
 Grille* init_grille(int x, int y);
 
-void afficher_grille(Grille g);
+void afficher_grille(Grille *g);
 
-void afficher_zone(Grille g);
+void afficher_zone(Grille *g);
 
-Zone zoneOf(Grille g, int x, int y);
+Zone zoneOf(Grille *g, int x, int y);
 
-Case* get_danger_case(Grille g);
+int get_danger_case(Grille *g, Case *Danger);

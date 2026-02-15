@@ -19,7 +19,6 @@ Grille* init_grille(int x, int y){
         for (int j=0; j<x; j++){
             g->tab[i][j].x = j;
             g->tab[i][j].y = i;
-            // xx ≤ maxX / 2 ∧ yy ≤ maxY / 2 
             if (j<=((x-1)/2) && i<=((y-1)/2))
                 g->tab[i][j].zone = ZONE_1;
             else if (j<=((x-1)/2) && i>((y-1)/2))
@@ -34,19 +33,19 @@ Grille* init_grille(int x, int y){
     return g;
 }
 
-void afficher_grille(Grille g){
-    for (int i=0; i<g.y; i++){
-        for (int j=0; j<g.x; j++){
-            printf("%c", g.tab[i][j].state);
+void afficher_grille(Grille *g){
+    for (int i=0; i<g->y; i++){
+        for (int j=0; j<g->x; j++){
+            printf("%c", g->tab[i][j].state);
         }
         printf("\n");
     }
 }
 
-void afficher_zone(Grille g){
-    for (int i=0; i<g.y; i++){
-        for (int j=0; j<g.x; j++){
-            switch (g.tab[i][j].zone){
+void afficher_zone(Grille *g){
+    for (int i=0; i<g->y; i++){
+        for (int j=0; j<g->x; j++){
+            switch (g->tab[i][j].zone){
                 case (ZONE_1):
                     printf("1");
                     break;
@@ -67,20 +66,19 @@ void afficher_zone(Grille g){
     }
 }
 
-Zone zoneOf(Grille g, int x, int y){
-    return g.tab[y][x].zone;
+Zone zoneOf(Grille *g, int x, int y){
+    return g->tab[y][x].zone;
 }
 
-Case* get_danger_case(Grille g){
-    Case *Danger = malloc(sizeof(Case));
+int get_danger_case(Grille *g, Case *Danger){
     int ind_danger = 0;
-    for (int i=0; i<g.y; i++){
-        for (int j=0; j<g.x; j++){
-            if (g.tab[i][j].state != '.'){
-                Danger[ind_danger] = g.tab[i][j];
+    for (int i=0; i<g->y; i++){
+        for (int j=0; j<g->x; j++){
+            if (g->tab[i][j].state != '.'){
+                Danger[ind_danger] = g->tab[i][j];
                 ind_danger++;
             }
         }
     }
-    return Danger;
+    return ind_danger;
 }
