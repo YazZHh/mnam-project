@@ -2,11 +2,14 @@
 #define MAX_Y 100
 #define ZONE_COUNT 4
 
+#define CASE_VIDE '.'
+#define CASE_DANGER '#'
+
 typedef enum {
-    ZONE_1 = 1,
-    ZONE_2 = 2,
-    ZONE_3 = 3,
-    ZONE_4 = 4
+    ZONE_1 = 0,
+    ZONE_2 = 1,
+    ZONE_3 = 2,
+    ZONE_4 = 3
 } Zone;
 
 typedef struct Case {
@@ -19,6 +22,8 @@ typedef struct Grille {
     int x, y;
     Case **tab;
 } Grille;
+
+Case* init_case(int x, int y, Zone zone, char state);
 
 Grille* init_grille(int x, int y);
 

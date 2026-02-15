@@ -2,7 +2,17 @@
 #include <stdlib.h>
 #include "grille.h"
 
-Grille* init_grille(int x, int y){
+Case *init_case(int x, int y, Zone zone, char state){
+    Case *c = malloc(sizeof(struct Case));
+    c->x = x;
+    c->y = y;
+    c->zone = zone;
+    c->state = state;
+    return c;
+}
+
+Grille *init_grille(int x, int y)
+{
     if (x<1 || y<1 || x>MAX_X || y>MAX_Y)
         return NULL;
     Grille *g = malloc(sizeof(struct Grille));
@@ -17,6 +27,7 @@ Grille* init_grille(int x, int y){
     }
     for (int i=0; i<y; i++){
         for (int j=0; j<x; j++){
+
             g->tab[i][j].x = j;
             g->tab[i][j].y = i;
             if (j<=((x-1)/2) && i<=((y-1)/2))
@@ -27,7 +38,7 @@ Grille* init_grille(int x, int y){
                 g->tab[i][j].zone = ZONE_3;
             else
                 g->tab[i][j].zone = ZONE_4;
-            g->tab[i][j].state = '.';
+            g->tab[i][j].state = CASE_VIDE;
         }
     }
     return g;
@@ -74,7 +85,7 @@ int get_danger_case(Grille *g, Case *Danger){
     int ind_danger = 0;
     for (int i=0; i<g->y; i++){
         for (int j=0; j<g->x; j++){
-            if (g->tab[i][j].state != '.'){
+            if (g->tab[i][j].state != CASE_VIDE){
                 Danger[ind_danger] = g->tab[i][j];
                 ind_danger++;
             }

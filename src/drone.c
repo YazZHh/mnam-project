@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdlib.h>
 #include "drone.h"
 
 Drone *init_drone(Grille *g){
@@ -16,21 +17,49 @@ Drone *init_drone(Grille *g){
     return d;
 }
 
-void takeoff_cmd(Drone *d, Case Danger[], int Danger_len){
+void takeoff_cmd(Grille *g, Drone *d){
     if (!(d->crashed) && !(d->airborne) && !(d->docked) && d->battery > 0){
         d->airborne = 1;
-        int i=0;
-        Case c;
-        if(Danger_len>0){
-            c = Danger[i];
-            while (i<Danger_len && c.x != d->posX && c.y != d->posY){
-                c = Danger[i];
-                i++;
-            }
-            if (i<Danger_len)
-                d->obstacle_distance = 2;
-        }
-        d->obstacle_distance = 0;
+
+        if (g->tab[d->posY][d->posX].state == CASE_DANGER)
+            d->obstacle_distance = 0;
+        else
+            d->obstacle_distance = 2;
     }
 }
 
+void move_step(Grille *g, Drone *d){
+    if (!d->crashed && d->airborne && !d->docked && d->battery>0){
+        int nextX, nextY;
+        
+        if (rand()%2 == 0){
+            if (d->posX == 0)
+                nextX = d->posX+1;
+            else if (d->posX == MAX_X)
+                nextX = d->posX-1;
+            else if (rand()%2 == 0)
+                nextX = d->posX+1;
+            else 
+                nextX = d->posX-1;
+            d->posX = nextX;
+        } else {
+            if (d->posY == 0)
+                nextY = d->posY+1;
+            else if (d->posY == MAX_Y)
+                nextY = d->posY-1;
+            else if (rand()%2 == 0)
+                nextY = d->posY+1;
+            else 
+                nextY = d->posY-1;
+            d->posY = nextY;
+        }
+
+        d->battery--;
+        d->visZones[zoneOf(g, nextX, nextY)] = true;
+
+        if (g->tab[nextY][nextX].state == CASE_DANGER)
+            d->obstacle_distance = 0;
+        else
+            d->obstacle_distance = 2;
+    }
+}
