@@ -163,3 +163,10 @@ void charge_step(Drone *d){
             d->battery = 100;
     }
 }
+
+void emergency_stop(Drone *d){
+    d->crashed = true;
+    d->airborne = false;
+    d->docked = false;
+    d->obstacle_distance = 0;
+}
