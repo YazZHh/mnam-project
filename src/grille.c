@@ -81,6 +81,10 @@ Zone zoneOf(Grille *g, int x, int y){
     return g->tab[y][x].zone;
 }
 
+char stateOf(Grille *g, int x, int y){
+    return g->tab[y][x].state;
+}
+
 int get_danger_case(Grille *g, Case *Danger){
     int ind_danger = 0;
     for (int i=0; i<g->y; i++){

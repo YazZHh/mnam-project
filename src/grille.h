@@ -33,4 +33,6 @@ void afficher_zone(Grille *g);
 
 Zone zoneOf(Grille *g, int x, int y);
 
+char stateOf(Grille *g, int x, int y);
+
 int get_danger_case(Grille *g, Case *Danger);

@@ -30,3 +30,5 @@ void return_home(Drone *d);
 void dock_cmd(Drone *d);
 
 void undock_cmd(Drone *d);
+
+void charge_step(Drone *d);

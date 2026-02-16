@@ -20,7 +20,7 @@ Drone *init_drone(Grille *g){
 void takeoff_cmd(Drone *d){
     if (!(d->crashed) && !(d->airborne) && !(d->docked) && d->battery > 0){
         d->airborne = 1;
-        if (d->g->tab[d->posY][d->posX].state == CASE_DANGER)
+        if (stateOf(d->g, d->posX, d->posY) == CASE_DANGER)
             d->obstacle_distance = 0;
         else
             d->obstacle_distance = 2;
@@ -56,7 +56,7 @@ void move_step(Drone *d){
         d->posY = nextY;
         d->battery--;
         d->visZones[zoneOf(d->g, nextX, nextY)] = true;
-        if (d->g->tab[nextY][nextX].state == CASE_DANGER)
+        if (stateOf(d->g, nextX, nextY) == CASE_DANGER)
             d->obstacle_distance = 0;
         else
             d->obstacle_distance = 2;
@@ -105,7 +105,7 @@ void avoid_maneuver(Drone *d){
             C = cases[rand()%indCases];
             d->posX = C->x;
             d->posY = C->y;
-            d->battery = d->battery-2;
+            d->battery =- 2;
             d->visZones[(zoneOf(d->g, d->posX, d->posY))] = true;
             d->obstacle_distance = 2;
         } else {
@@ -133,7 +133,7 @@ void return_home(Drone *d){
         d->battery--;
         d->visZones[zoneOf(d->g, nextX, nextY)] = true;
 
-        if (d->g->tab[nextY][nextX].state == CASE_DANGER)
+        if (stateOf(d->g, nextX, nextY) == CASE_DANGER)
             d->obstacle_distance = 0;
         else
             d->obstacle_distance = 2;
@@ -152,5 +152,14 @@ void undock_cmd(Drone *d){
         d->docked = false;
         d->airborne = true;
         d->visZones[zoneOf(d->g, d->posX, d->posY)] = true;
+    }
+}
+
+void charge_step(Drone *d){
+    if (!d->crashed && d->docked){
+        if (d->battery <= 95)
+            d->battery += 5;
+        else
+            d->battery = 100;
     }
 }
