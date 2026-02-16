@@ -28,8 +28,9 @@ void takeoff_cmd(Grille *g, Drone *d){
 }
 
 void move_step(Grille *g, Drone *d){
-    if (!d->crashed && d->airborne && !d->docked && d->battery>0){
-        int nextX, nextY;
+    if (!d->crashed && d->airborne && !d->docked && d->battery > 0){
+        int nextX = d->posX;
+        int nextY = d->posY;
         
         if (rand()%2 == 0){
             if (d->posX == 0)
@@ -40,7 +41,6 @@ void move_step(Grille *g, Drone *d){
                 nextX = d->posX+1;
             else 
                 nextX = d->posX-1;
-            d->posX = nextX;
         } else {
             if (d->posY == 0)
                 nextY = d->posY+1;
@@ -50,9 +50,10 @@ void move_step(Grille *g, Drone *d){
                 nextY = d->posY+1;
             else 
                 nextY = d->posY-1;
-            d->posY = nextY;
         }
 
+        d->posX = nextX;
+        d->posY = nextY;
         d->battery--;
         d->visZones[zoneOf(g, nextX, nextY)] = true;
 
@@ -64,10 +65,9 @@ void move_step(Grille *g, Drone *d){
 }
 
 void avoid_maneuver(Grille *g, Drone *d){
-    if (!d->crashed && d->airborne && !d->docked && d->battery>1){
+    if (!d->crashed && d->airborne && !d->docked && d->battery > 1){
         Case *cases[4];
         Case *C;
-        // int nextX, nextY;
         int indCases = 0;
         for (int i=0; i<4; i++){
             switch(i){
@@ -109,38 +109,33 @@ void avoid_maneuver(Grille *g, Drone *d){
             d->visZones[(zoneOf(g, d->posX, d->posY))] = true;
             d->obstacle_distance = 2;
         } else {
-            int nextX, nextY;
-
-            if (rand()%2 == 0){
-                if (d->posX == 0)
-                    nextX = d->posX+1;
-                else if (d->posX == MAX_X)
-                    nextX = d->posX-1;
-                else if (rand()%2 == 0)
-                    nextX = d->posX+1;
-                else 
-                    nextX = d->posX-1;
-                d->posX = nextX;
-            } else {
-                if (d->posY == 0)
-                    nextY = d->posY+1;
-                else if (d->posY == MAX_Y)
-                    nextY = d->posY-1;
-                else if (rand()%2 == 0)
-                    nextY = d->posY+1;
-                else 
-                    nextY = d->posY-1;
-                d->posY = nextY;
-            }
-            d->posX = nextX;
-            d->posY = nextY;
-            d->battery = d->battery-2;
-            d->visZones[(zoneOf(g, d->posX, d->posY))] = true;
-
-            if (g->tab[d->posY][d->posX].state == CASE_DANGER)
-                d->obstacle_distance = 0;
-            else
-                d->obstacle_distance = 2;
+            move_step(g, d);
         }
+    }
+}
+
+void return_home(Grille *g, Drone *d){
+    if (!d->crashed && d->airborne && !d->docked && d->battery > 0){
+        int nextX = d->posX;
+        int nextY = d->posY;
+
+        if (d->posX < d->baseX)
+            nextX = d->posX+1;
+        else if (d->posX > d->baseX)
+            nextX = d->posX-1;
+        if (d->posY < d->baseY)
+            nextX = d->posY+1;
+        else if (d->posY > d->baseY)
+            nextX = d->posY-1;
+
+        d->posX = nextX;
+        d->posY = nextY;
+        d->battery--;
+        d->visZones[zoneOf(g, nextX, nextY)] = true;
+
+        if (g->tab[nextY][nextX].state == CASE_DANGER)
+            d->obstacle_distance = 0;
+        else
+            d->obstacle_distance = 2;
     }
 }
