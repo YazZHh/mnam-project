@@ -19,3 +19,5 @@ Drone* init_drone(Grille *g);
 void takeoff_cmd(Grille *g, Drone *d);
 
 void move_step(Grille *g, Drone *d);
+
+void avoid_maneuver(Grille *g, Drone *d);
