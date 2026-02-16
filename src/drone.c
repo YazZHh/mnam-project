@@ -3,11 +3,12 @@
 
 Drone *init_drone(Grille *g){
     Drone* d = malloc(sizeof(struct Drone));
+    d->g = g;
     d->posX = 0;
     d->posY = 0;
     d->baseX = 0;
     d->baseY = 0;
-    d->battery = 100;
+    d->battery = BATTERY_FULL;
     d->obstacle_distance = 2;
     d->docked = false;
     d->airborne = false;
@@ -16,18 +17,17 @@ Drone *init_drone(Grille *g){
     return d;
 }
 
-void takeoff_cmd(Grille *g, Drone *d){
+void takeoff_cmd(Drone *d){
     if (!(d->crashed) && !(d->airborne) && !(d->docked) && d->battery > 0){
         d->airborne = 1;
-
-        if (g->tab[d->posY][d->posX].state == CASE_DANGER)
+        if (d->g->tab[d->posY][d->posX].state == CASE_DANGER)
             d->obstacle_distance = 0;
         else
             d->obstacle_distance = 2;
     }
 }
 
-void move_step(Grille *g, Drone *d){
+void move_step(Drone *d){
     if (!d->crashed && d->airborne && !d->docked && d->battery > 0){
         int nextX = d->posX;
         int nextY = d->posY;
@@ -55,16 +55,15 @@ void move_step(Grille *g, Drone *d){
         d->posX = nextX;
         d->posY = nextY;
         d->battery--;
-        d->visZones[zoneOf(g, nextX, nextY)] = true;
-
-        if (g->tab[nextY][nextX].state == CASE_DANGER)
+        d->visZones[zoneOf(d->g, nextX, nextY)] = true;
+        if (d->g->tab[nextY][nextX].state == CASE_DANGER)
             d->obstacle_distance = 0;
         else
             d->obstacle_distance = 2;
     }
 }
 
-void avoid_maneuver(Grille *g, Drone *d){
+void avoid_maneuver(Drone *d){
     if (!d->crashed && d->airborne && !d->docked && d->battery > 1){
         Case *cases[4];
         Case *C;
@@ -73,25 +72,25 @@ void avoid_maneuver(Grille *g, Drone *d){
             switch(i){
                 case 0:
                     if (d->posX>0)
-                        C = &(g->tab[d->posY][d->posX-1]);
+                        C = &(d->g->tab[d->posY][d->posX-1]);
                     else
                         C = NULL;
                     break;
                 case 1:
                     if (d->posY<MAX_Y)
-                        C = &(g->tab[d->posY+1][d->posX]);
+                        C = &(d->g->tab[d->posY+1][d->posX]);
                     else
                         C = NULL;
                     break;
                 case 2:
                     if (d->posX<MAX_X)
-                        C = &(g->tab[d->posY][d->posX+1]);
+                        C = &(d->g->tab[d->posY][d->posX+1]);
                     else
                         C = NULL;
                     break;
                 default:
                     if (d->posY>0)
-                        C = &(g->tab[d->posY-1][d->posX]);
+                        C = &(d->g->tab[d->posY-1][d->posX]);
                     else
                         C = NULL;
                     break;
@@ -101,20 +100,21 @@ void avoid_maneuver(Grille *g, Drone *d){
                 indCases++;
             }
         }
+
         if (indCases > 0){
             C = cases[rand()%indCases];
             d->posX = C->x;
             d->posY = C->y;
             d->battery = d->battery-2;
-            d->visZones[(zoneOf(g, d->posX, d->posY))] = true;
+            d->visZones[(zoneOf(d->g, d->posX, d->posY))] = true;
             d->obstacle_distance = 2;
         } else {
-            move_step(g, d);
+            move_step(d);
         }
     }
 }
 
-void return_home(Grille *g, Drone *d){
+void return_home(Drone *d){
     if (!d->crashed && d->airborne && !d->docked && d->battery > 0){
         int nextX = d->posX;
         int nextY = d->posY;
@@ -131,11 +131,26 @@ void return_home(Grille *g, Drone *d){
         d->posX = nextX;
         d->posY = nextY;
         d->battery--;
-        d->visZones[zoneOf(g, nextX, nextY)] = true;
+        d->visZones[zoneOf(d->g, nextX, nextY)] = true;
 
-        if (g->tab[nextY][nextX].state == CASE_DANGER)
+        if (d->g->tab[nextY][nextX].state == CASE_DANGER)
             d->obstacle_distance = 0;
         else
             d->obstacle_distance = 2;
+    }
+}
+
+void dock_cmd(Drone *d){
+    if (!d->crashed && d->airborne && !d->docked && d->posX == d->baseX && d->posY == d->baseY){
+        d->airborne = false;
+        d->docked = true;
+    }
+}
+
+void undock_cmd(Drone *d){
+    if (!d->crashed && !d->airborne && d->docked && d->battery > 0){
+        d->docked = false;
+        d->airborne = true;
+        d->visZones[zoneOf(d->g, d->posX, d->posY)] = true;
     }
 }

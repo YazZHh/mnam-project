@@ -3,7 +3,10 @@
 #include <time.h>
 #include "grille.h"
 
+#define BATTERY_FULL 100
+
 typedef struct Drone {
+    Grille *g;
     int posX, posY;
     int baseX, baseY;
     int battery;
@@ -16,10 +19,14 @@ typedef struct Drone {
 
 Drone* init_drone(Grille *g);
 
-void takeoff_cmd(Grille *g, Drone *d);
+void takeoff_cmd(Drone *d);
 
-void move_step(Grille *g, Drone *d);
+void move_step(Drone *d);
 
-void avoid_maneuver(Grille *g, Drone *d);
+void avoid_maneuver(Drone *d);
 
-void return_home(Grille *g, Drone *d);
+void return_home(Drone *d);
+
+void dock_cmd(Drone *d);
+
+void undock_cmd(Drone *d);
