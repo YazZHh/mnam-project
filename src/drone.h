@@ -19,6 +19,8 @@ typedef struct Drone {
 
 Drone* init_drone(Grille *g);
 
+void afficher_grille_drone(Drone *d);
+
 void takeoff_cmd(Drone *d);
 
 void move_step(Drone *d);

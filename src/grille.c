@@ -11,8 +11,7 @@ Case *init_case(int x, int y, Zone zone, char state){
     return c;
 }
 
-Grille *init_grille(int x, int y)
-{
+Grille *init_grille(int x, int y){
     if (x<1 || y<1 || x>MAX_X || y>MAX_Y)
         return NULL;
     Grille *g = malloc(sizeof(struct Grille));

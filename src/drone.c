@@ -17,8 +17,22 @@ Drone *init_drone(Grille *g){
     return d;
 }
 
+void afficher_grille_drone(Drone *d){
+    for (int i=0; i<d->g->y; i++){
+        for (int j=0; j<d->g->x; j++){
+            if (i == d->posY && j == d->posX)
+                printf("@");
+            else if (i == d->baseY && j == d->baseX)
+                printf("H");
+            else
+                printf("%c", d->g->tab[i][j].state);
+        }
+        printf("\n");
+    }
+}
+
 void takeoff_cmd(Drone *d){
-    if (!(d->crashed) && !(d->airborne) && !(d->docked) && d->battery > 0){
+    if (!d->crashed && !d->airborne && !d->docked && d->battery > 0){
         d->airborne = 1;
         if (stateOf(d->g, d->posX, d->posY) == CASE_DANGER)
             d->obstacle_distance = 0;
@@ -35,7 +49,7 @@ void move_step(Drone *d){
         if (rand()%2 == 0){
             if (d->posX == 0)
                 nextX = d->posX+1;
-            else if (d->posX == MAX_X)
+            else if (d->posX == d->g->x)
                 nextX = d->posX-1;
             else if (rand()%2 == 0)
                 nextX = d->posX+1;
@@ -44,7 +58,7 @@ void move_step(Drone *d){
         } else {
             if (d->posY == 0)
                 nextY = d->posY+1;
-            else if (d->posY == MAX_Y)
+            else if (d->posY == d->g->y)
                 nextY = d->posY-1;
             else if (rand()%2 == 0)
                 nextY = d->posY+1;
@@ -77,13 +91,13 @@ void avoid_maneuver(Drone *d){
                         C = NULL;
                     break;
                 case 1:
-                    if (d->posY<MAX_Y)
+                    if (d->posY<d->g->y)
                         C = &(d->g->tab[d->posY+1][d->posX]);
                     else
                         C = NULL;
                     break;
                 case 2:
-                    if (d->posX<MAX_X)
+                    if (d->posX<d->g->x)
                         C = &(d->g->tab[d->posY][d->posX+1]);
                     else
                         C = NULL;
