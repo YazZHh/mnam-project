@@ -33,7 +33,7 @@ void afficher_grille_drone(Drone *d){
 
 void takeoff_cmd(Drone *d){
     if (!d->crashed && !d->airborne && !d->docked && d->battery > 0){
-        d->airborne = 1;
+        d->airborne = true;
         if (stateOf(d->g, d->posX, d->posY) == CASE_DANGER)
             d->obstacle_distance = 0;
         else
@@ -49,7 +49,7 @@ void move_step(Drone *d){
         if (rand()%2 == 0){
             if (d->posX == 0)
                 nextX = d->posX+1;
-            else if (d->posX == d->g->x)
+            else if (d->posX == d->g->x - 1)
                 nextX = d->posX-1;
             else if (rand()%2 == 0)
                 nextX = d->posX+1;
@@ -58,7 +58,7 @@ void move_step(Drone *d){
         } else {
             if (d->posY == 0)
                 nextY = d->posY+1;
-            else if (d->posY == d->g->y)
+            else if (d->posY == d->g->y - 1)
                 nextY = d->posY-1;
             else if (rand()%2 == 0)
                 nextY = d->posY+1;
@@ -138,9 +138,9 @@ void return_home(Drone *d){
         else if (d->posX > d->baseX)
             nextX = d->posX-1;
         if (d->posY < d->baseY)
-            nextX = d->posY+1;
+            nextY = d->posY+1;
         else if (d->posY > d->baseY)
-            nextX = d->posY-1;
+            nextY = d->posY-1;
 
         d->posX = nextX;
         d->posY = nextY;
