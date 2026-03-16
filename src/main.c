@@ -65,7 +65,24 @@ int main(int argc, char *argv[]){
                         break;
                     case 2:
                         if (!d->crashed && d->airborne && !d->docked && d->battery > 0){
-                            move_step(d);
+                            int indCases;
+                            Case** cases = moves_possibles(d, &indCases);
+                            
+                            printf("Choisissez une case parmis les suivantes (");
+                            int i, choix;
+                            for (i=0; i<indCases-1; i++){
+                                printf("%d: (%d,%d), ", i+1, cases[i]->x, cases[i]->y);
+                            }
+                            printf("%d: (%d,%d)) : ", i+1, cases[i]->x, cases[i]->y);
+                            scanf("%d", &choix);
+                            while (choix < 1 || choix > i+1){
+                                printf("Entrée incorrecte ! Choisissez une case : ");
+                                scanf("%d", &choix);
+                            }
+                            int nextX = cases[choix-1]->x;
+                            int nextY = cases[choix-1]->y;
+
+                            move_step(d, nextX, nextY);
                             have_actioned = true;
                         } else
                             printf("Action impossible dans l'état actuel du drone !\n");
@@ -122,7 +139,7 @@ int main(int argc, char *argv[]){
     afficher_zone(g);
     
     takeoff_cmd(d);
-    move_step(d);
+    // move_step(d);
     
     printf("\n");
     afficher_grille_drone(d);

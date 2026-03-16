@@ -23,7 +23,11 @@ void afficher_grille_drone(Drone *d);
 
 void takeoff_cmd(Drone *d);
 
-void move_step(Drone *d);
+void move_step(Drone *d, int nextX, int nextY);
+
+Case** moves_possibles(Drone *d, int *nbCases);
+
+void move_step_manuel(Drone *d);
 
 void avoid_maneuver(Drone *d);
 
