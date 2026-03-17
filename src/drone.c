@@ -43,29 +43,6 @@ void takeoff_cmd(Drone *d){
 
 void move_step(Drone *d, int nextX, int nextY){
     if (!d->crashed && d->airborne && !d->docked && d->battery > 0){
-        // int nextX = d->posX;
-        // int nextY = d->posY;
-        
-        // if (rand()%2 == 0){
-        //     if (d->posX == 0)
-        //         nextX = d->posX+1;
-        //     else if (d->posX == d->g->x - 1)
-        //         nextX = d->posX-1;
-        //     else if (rand()%2 == 0)
-        //         nextX = d->posX+1;
-        //     else 
-        //         nextX = d->posX-1;
-        // } else {
-        //     if (d->posY == 0)
-        //         nextY = d->posY+1;
-        //     else if (d->posY == d->g->y - 1)
-        //         nextY = d->posY-1;
-        //     else if (rand()%2 == 0)
-        //         nextY = d->posY+1;
-        //     else 
-        //         nextY = d->posY-1;
-        // }
-
         d->posX = nextX;
         d->posY = nextY;
         d->battery--;
@@ -90,13 +67,13 @@ Case** moves_possibles(Drone *d, int *nbCases){
                     C = NULL;
                 break;
             case 1:
-                if (d->posY<d->g->y)
+                if (d->posY<d->g->y-1)
                     C = &(d->g->tab[d->posY+1][d->posX]);
                 else
                     C = NULL;
                 break;
             case 2:
-                if (d->posX<d->g->x)
+                if (d->posX<d->g->x-1)
                     C = &(d->g->tab[d->posY][d->posX+1]);
                 else
                     C = NULL;
@@ -117,81 +94,21 @@ Case** moves_possibles(Drone *d, int *nbCases){
     return cases;
 }
 
-void move_step_manuel(Drone *d){
-    int indCases;
-    Case** cases = moves_possibles(d, &indCases);
-
-    printf("Choisissez une case parmis les suivantes (");
-    int i;
-    int choix;
-    for (i=0; i<indCases-1; i++){
-        printf("%d: (%d,%d), ", i+1, cases[i]->x, cases[i]->y);
-    }
-    printf("%d: (%d,%d)) : ", i+1, cases[i]->x, cases[i]->y);
-    scanf("%d", &choix);
-    while (choix < 1 || choix > i+1){
-        printf("Entrée incorrecte ! Choisissez une case : ");
-        scanf("%d", &choix);
-    }
-
-    d->posX = cases[choix-1]->x;
-    d->posY = cases[choix-1]->y;
-    d->battery--;
-    d->visZones[zoneOf(d->g, d->posX, d->posY)] = true;
-    if (stateOf(d->g, d->posX, d->posY) == CASE_DANGER)
-        d->obstacle_distance = 0;
-    else
-        d->obstacle_distance = 2;
-}
-
 void avoid_maneuver(Drone *d){
     if (!d->crashed && d->airborne && !d->docked && d->battery > 1){
-        Case *cases[4];
-        Case *C;
-        int indCases = 0;
-        for (int i=0; i<4; i++){
-            switch(i){
-                case 0:
-                    if (d->posX>0)
-                        C = &(d->g->tab[d->posY][d->posX-1]);
-                    else
-                        C = NULL;
-                    break;
-                case 1:
-                    if (d->posY<d->g->y)
-                        C = &(d->g->tab[d->posY+1][d->posX]);
-                    else
-                        C = NULL;
-                    break;
-                case 2:
-                    if (d->posX<d->g->x)
-                        C = &(d->g->tab[d->posY][d->posX+1]);
-                    else
-                        C = NULL;
-                    break;
-                default:
-                    if (d->posY>0)
-                        C = &(d->g->tab[d->posY-1][d->posX]);
-                    else
-                        C = NULL;
-                    break;
-            }
-            if (C != NULL && C->state == CASE_VIDE){
-                cases[indCases] = C;
-                indCases++;
-            }
-        }
+        int indCases;
+        Case** cases = moves_possibles(d, &indCases);
 
+        Case *C;
         if (indCases > 0){
             C = cases[rand()%indCases];
             d->posX = C->x;
             d->posY = C->y;
-            d->battery =- 2;
+            d->battery -= 2;
             d->visZones[(zoneOf(d->g, d->posX, d->posY))] = true;
             d->obstacle_distance = 2;
-        } else {
-            move_step(d, 0, 0);
         }
+        free(cases);
     }
 }
 

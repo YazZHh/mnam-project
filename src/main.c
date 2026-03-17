@@ -37,7 +37,6 @@ int main(int argc, char *argv[]){
         bool have_actioned;
         while (!d->crashed){
             printf("\n");
-            afficher_zone(g);
             afficher_grille_drone(d);
             printf("État du drone : (posX,poxY)=(%d,%d), battery=%d, docked=%d, airbone=%d, crashed=%d\n", d->posX, d->posY, d->battery, d->docked, d->airborne, d->crashed);
             printf("Zones visitées : ");
@@ -83,6 +82,7 @@ int main(int argc, char *argv[]){
                             int nextY = cases[choix-1]->y;
 
                             move_step(d, nextX, nextY);
+                            free(cases);
                             have_actioned = true;
                         } else
                             printf("Action impossible dans l'état actuel du drone !\n");
@@ -132,15 +132,6 @@ int main(int argc, char *argv[]){
             }
         }
     } else if (mode == 2){
-
+        // Not yet implemented
     }
-    
-    afficher_grille(g);
-    afficher_zone(g);
-    
-    takeoff_cmd(d);
-    // move_step(d);
-    
-    printf("\n");
-    afficher_grille_drone(d);
 }
