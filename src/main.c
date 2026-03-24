@@ -132,6 +132,92 @@ int main(int argc, char *argv[]){
             }
         }
     } else if (mode == 2){
-        // Not yet implemented
+        char* filename = malloc(sizeof(char)*100);
+        printf("Entrez le nom du fichier d'instructions que vous souhaitez utiliser : ");
+        scanf("%s", filename);
+        FILE* f = fopen(filename, "r");
+        // FILE* f = fopen("instructions.txt", "r");
+        if (f == NULL){
+            printf("Erreur: Impossible d'ouvrir le fichier !\n");
+            return 1;
+        }
+        int action;
+        bool error = false;
+        bool wrong_action = false;
+        while (!feof(f) && !error && !wrong_action){
+            afficher_grille_drone(d);
+            fscanf(f, "%d", &action);            
+            printf("action : %d\n", action);
+            switch (action){
+                case 1:
+                        if (!d->crashed && !d->airborne && !d->docked && d->battery > 0){
+                            takeoff_cmd(d);
+                        } else
+                            wrong_action = true;
+                        break;
+                    case 2:
+                        if (!d->crashed && d->airborne && !d->docked && d->battery > 0){
+                            int nextX, nextY;
+                            if (!feof(f))
+                                fscanf(f, ", %d", &nextX);
+                            else
+                                error = true;
+                            if (!feof(f))
+                                fscanf(f, ", %d", &nextY);
+                            else
+                                error = true;
+                            if (!error){
+                                printf("nextX: %d, nextY: %d\n", nextX, nextY);
+                                move_step(d, nextX, nextY);
+                            }
+                            
+                        } else
+                            wrong_action = true;
+                        break;
+                    case 3:
+                        if (!d->crashed && d->airborne && !d->docked && d->battery > 1){
+                            avoid_maneuver(d);
+                        } else
+                            wrong_action = true;
+                        break;
+                    case 4:
+                        if (!d->crashed && d->airborne && !d->docked && d->battery > 0){
+                            return_home(d);
+                        } else
+                            wrong_action = true;
+                        break;
+                    case 5:
+                        if (!d->crashed && d->airborne && !d->docked && d->posX == d->baseX && d->posY == d->baseY){
+                            dock_cmd(d);
+                        } else
+                            wrong_action = true;
+                        break;
+                    case 6:
+                        if (!d->crashed && !d->airborne && d->docked && d->battery > 0){
+                            undock_cmd(d);
+                        } else
+                            wrong_action = true;
+                        break;
+                    case 7:
+                        if (!d->crashed && d->docked){
+                            charge_step(d);
+                        } else
+                            wrong_action = true;
+                        break;
+                    case 8:
+                        emergency_stop(d);
+                        break;
+                default:
+                    error = true;
+                    break;
+            }
+        }
+
+        if (error)
+            printf("Erreur: instruction incorrecte ou fin de fichier prématurée\n");
+        if (wrong_action)
+            printf("Erreur: Action impossible dans l'état actuel du drone !\n");
+        fclose(f);
+        free(filename);
     }
 }
