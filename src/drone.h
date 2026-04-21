@@ -1,23 +1,16 @@
+#ifndef DRONE_H
+#define DRONE_H
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
-#include "grille.h"
+#include "state.h"
 
 #define BATTERY_FULL 100
 
-typedef struct Drone {
-    Grille *g;
-    int posX, posY;
-    int baseX, baseY;
-    int battery;
-    int obstacle_distance;
-    bool docked;
-    bool airborne;
-    bool crashed;
-    bool visZones[ZONE_COUNT];
-} Drone;
-
 Drone* init_drone(Grille *g);
+
+Drone* init_drone_state(Grille *g, State *s);
 
 void afficher_grille_drone(Drone *d);
 
@@ -38,3 +31,5 @@ void undock_cmd(Drone *d);
 void charge_step(Drone *d);
 
 void emergency_stop(Drone *d);
+
+#endif

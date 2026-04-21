@@ -219,5 +219,22 @@ int main(int argc, char *argv[]){
             printf("Erreur: Action impossible dans l'état actuel du drone !\n");
         fclose(f);
         free(filename);
+    } else if (mode == 3){
+        // char* filename = malloc(sizeof(char)*100);
+        // printf("Entrez le nom du fichier d'instructions que vous souhaitez utiliser : ");
+        // scanf("%s", filename);
+        // FILE* f = fopen(filename, "r");
+
+        FILE* f = fopen("transitions.txt", "w");
+        if (f == NULL){
+            printf("Erreur d'accès au fichier des transitions !\n");
+            return -1;
+        }
+        fprintf(f, "Format du fichier:\nid état courant;\tid action;\tX suiv;\tYsuiv;\tid état suivant;\trécompense;\tprobabilité\n\n");
+        StateList *sl = init_statelist();
+        State *s = init_state_drone(d);
+        explore(g, sl, s, 50, 20, f);
+        printf("Nombre d'états de la StateList : %d\n", sl->nbstates);
+        fclose(f);
     }
 }

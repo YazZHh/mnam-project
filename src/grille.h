@@ -1,3 +1,6 @@
+#ifndef GRILLE_H
+#define GRILLE_H
+
 #define MAX_X 100
 #define MAX_Y 100
 #define ZONE_COUNT 4
@@ -36,3 +39,5 @@ Zone zoneOf(Grille *g, int x, int y);
 char stateOf(Grille *g, int x, int y);
 
 int get_danger_case(Grille *g, Case *Danger);
+
+#endif

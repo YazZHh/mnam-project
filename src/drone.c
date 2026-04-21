@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "drone.h"
 
-Drone *init_drone(Grille *g){
+Drone* init_drone(Grille *g){
     Drone* d = malloc(sizeof(struct Drone));
     d->g = g;
     d->posX = 0;
@@ -14,6 +14,23 @@ Drone *init_drone(Grille *g){
     d->airborne = false;
     d->crashed = false;
     d->visZones[zoneOf(g, 0, 0)] = true;
+    return d;
+}
+
+Drone* init_drone_state(Grille *g, State *s){
+    Drone* d = malloc(sizeof(struct Drone));
+    d->g = g;
+    d->posX = s->posX;
+    d->posY = s->posY;
+    d->baseX = s->baseX;
+    d->baseY = s->baseY;
+    d->battery = s->battery;
+    d->obstacle_distance = s->obstacle_distance;
+    d->docked = s->docked;
+    d->airborne = s->airborne;
+    d->crashed = s->crashed;
+    for (int i=ZONE_1; i<=ZONE_COUNT; i++)
+        d->visZones[i] = s->visZones[i];
     return d;
 }
 
