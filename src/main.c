@@ -249,8 +249,11 @@ int main(int argc, char *argv[]){
         StateList *sl = init_statelist();
         State *s = init_state_drone(d);
         explore(g, sl, s, 50, 20, f);
-        printf("Nombre d'états de la StateList : %d\n", sl->nbstates);
+        printf("Nombre d'états de la liste d'états : %d\n", sl->nbstates);
         fclose(f);
+
+        // Exploitation possible des données à cet endroit
+
         free(sl);
         free(s);
         free(filename);
