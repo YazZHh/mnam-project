@@ -54,7 +54,7 @@ int main(int argc, char *argv[]){
         while (!d->crashed){
             printf("\n");
             afficher_grille_drone(d);
-            printf("État du drone : (posX,poxY)=(%d,%d), battery=%d, docked=%d, airbone=%d, crashed=%d\n", d->posX, d->posY, d->battery, d->docked, d->airborne, d->crashed);
+            printf("État du drone : (posX,poxY)=(%d,%d), battery=%d, docked=%d, airborne=%d, crashed=%d\n", d->posX, d->posY, d->battery, d->docked, d->airborne, d->crashed);
             printf("Zones visitées : ");
             for (int i=0; i<4; i++){
                 if (d->visZones[i])
@@ -251,5 +251,8 @@ int main(int argc, char *argv[]){
         explore(g, sl, s, 50, 20, f);
         printf("Nombre d'états de la StateList : %d\n", sl->nbstates);
         fclose(f);
+        free(sl);
+        free(s);
+        free(filename);
     }
 }

@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "grille.h"
 
-#define MAX_STATES 50000
+#define MAX_STATES 75000
 
 typedef struct Drone {
     Grille *g;
