@@ -28,7 +28,9 @@ typedef struct Grille {
 
 Case* init_case(int x, int y, Zone zone, char state);
 
-Grille* init_grille(int x, int y);
+Grille* init_grille(int x, int y, int obstacle_probability);
+
+Grille* init_grille_file(FILE* f);
 
 void afficher_grille(Grille *g);
 

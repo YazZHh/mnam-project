@@ -11,7 +11,7 @@ Case *init_case(int x, int y, Zone zone, char state){
     return c;
 }
 
-Grille *init_grille(int x, int y){
+Grille *init_grille(int x, int y, int obstacle_probability){
     if (x<1 || y<1 || x>MAX_X || y>MAX_Y)
         return NULL;
     Grille *g = malloc(sizeof(struct Grille));
@@ -21,7 +21,7 @@ Grille *init_grille(int x, int y){
     g->y = y;
 
     g->tab = malloc(sizeof(struct Case*)*y);
-    for (int i = 0; i < y; i++) {
+    for (int i=0; i<y; i++) {
         g->tab[i] = malloc(sizeof(struct Case)*x);
     }
     for (int i=0; i<y; i++){
@@ -37,8 +37,52 @@ Grille *init_grille(int x, int y){
                 g->tab[i][j].zone = ZONE_3;
             else
                 g->tab[i][j].zone = ZONE_4;
-            g->tab[i][j].state = CASE_VIDE;
+            int obstacle = rand()%100 + 1;
+            if (obstacle<obstacle_probability && i != 0 && j != 0)
+                g->tab[i][j].state = CASE_DANGER;
+            else
+                g->tab[i][j].state = CASE_VIDE;
         }
+    }
+    return g;
+}
+
+Grille* init_grille_file(FILE* f){
+    int tailleX, tailleY;
+    fscanf(f, " %d, %d", &tailleX, &tailleY);
+    Grille *g = malloc(sizeof(struct Grille));
+    if (!g)
+        return NULL;
+    g->x = tailleX;
+    g->y = tailleY;
+
+    g->tab = malloc(sizeof(struct Case*)*tailleY);
+    for (int i=0; i<tailleY; i++) {
+        g->tab[i] = malloc(sizeof(struct Case)*tailleX);
+    }
+
+    fscanf(f, "\n");
+    char case_content;
+    for (int i=0; i<tailleY; i++){
+        for (int j=0; j<tailleX; j++){
+            g->tab[i][j].x = j;
+            g->tab[i][j].y = i;
+            if (j<=((tailleX-1)/2) && i<=((tailleY-1)/2))
+                g->tab[i][j].zone = ZONE_1;
+            else if (j<=((tailleX-1)/2) && i>((tailleY-1)/2))
+                g->tab[i][j].zone = ZONE_2;
+            else if (j>((tailleX-1)/2) && i<=((tailleY-1)/2))
+                g->tab[i][j].zone = ZONE_3;
+            else
+                g->tab[i][j].zone = ZONE_4;
+
+            fscanf(f, "%c", &case_content);
+            switch (case_content){
+                case '#': g->tab[i][j].state = CASE_DANGER; break;
+                default: g->tab[i][j].state = CASE_VIDE; break;
+            }
+        }
+        fscanf(f, "\n");
     }
     return g;
 }

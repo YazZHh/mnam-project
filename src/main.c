@@ -3,6 +3,43 @@
 #include "drone.h"
 
 int main(int argc, char *argv[]){
+    Grille *g;
+    if (argc == 2){
+        FILE* f = fopen(argv[1], "r");
+        if (f == NULL){
+            printf("Erreur lors de l'ouverture du fichier de la carte !\n");
+            return -1;
+        }
+        g = init_grille_file(f);
+    } else {
+        int tailleX, tailleY, obstacle_prob;
+        printf("Choisissez une taille de grille (2 min, 30 max)\n");
+        printf("abscisse : ");
+        scanf("%d", &tailleX);
+        while (tailleX < 2 || tailleX > 30){
+            printf("Entrée incorrecte ! (2 min, 30 max)\n");
+            printf("abscisse : ");
+            scanf("%d", &tailleX);
+        }
+        printf("ordonnée : ");
+        scanf("%d", &tailleY);
+        while (tailleY < 2 || tailleY > 30){
+            printf("Entrée incorrecte ! (2 min, 30 max)\n");
+            printf("ordonnée : ");
+            scanf("%d", &tailleY);
+        }
+        printf("Choisissez une probabilité de cases Danger/Obstacles (1 min, 100 max): ");
+        scanf("%d", &obstacle_prob);
+        while (obstacle_prob < 1 || obstacle_prob > 100){
+            printf("Entrée incorrecte ! (1 min, 100 max)\n");
+            printf("Choisissez une probabilité de cases Danger/Obstacles (1 min, 100 max): ");
+            scanf("%d", &obstacle_prob);
+        }
+        g = init_grille(tailleX, tailleY, obstacle_prob);
+    }
+    srand(time(NULL));
+    Drone *d = init_drone(g);
+
     int mode;
     printf("Choisissez un mode d'utilisation du drone (1: manuel, 2: automatique, 3: exhaustif) : ");
     scanf("%d", &mode);
@@ -10,27 +47,6 @@ int main(int argc, char *argv[]){
         printf("Entrée incorrecte ! Choisissez un mode d'utilisation du drone (1: manuel, 2: automatique, 3: exhaustif) : ");
         scanf("%d", &mode);
     }
-
-    int tailleX, tailleY;
-    printf("Choisissez une taille de grille (2 min, 30 max)\n");
-    printf("abscisse : ");
-    scanf("%d", &tailleX);
-    while (tailleX < 2 || tailleX > 30){
-        printf("Entrée incorrecte ! (2 min, 30 max)\n");
-        printf("abscisse : ");
-        scanf("%d", &tailleX);
-    }
-    printf("ordonnée : ");
-    scanf("%d", &tailleY);
-    while (tailleY < 2 || tailleY > 30){
-        printf("Entrée incorrecte ! (2 min, 30 max)\n");
-        printf("ordonnée : ");
-        scanf("%d", &tailleY);
-    }
-
-    srand(time(NULL));
-    Grille *g = init_grille(tailleX, tailleY);
-    Drone *d = init_drone(g);
     
     if (mode == 1){
         int action;
@@ -220,12 +236,11 @@ int main(int argc, char *argv[]){
         fclose(f);
         free(filename);
     } else if (mode == 3){
-        // char* filename = malloc(sizeof(char)*100);
-        // printf("Entrez le nom du fichier d'instructions que vous souhaitez utiliser : ");
-        // scanf("%s", filename);
-        // FILE* f = fopen(filename, "r");
-
-        FILE* f = fopen("transitions.txt", "w");
+        char* filename = malloc(sizeof(char)*100);
+        printf("Entrez le nom du fichier de transitions que vous souhaitez utiliser : ");
+        scanf("%s", filename);
+        FILE* f = fopen(filename, "w");
+        // FILE* f = fopen("transitions.txt", "w");
         if (f == NULL){
             printf("Erreur d'accès au fichier des transitions !\n");
             return -1;

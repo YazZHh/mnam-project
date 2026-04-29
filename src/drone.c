@@ -102,7 +102,7 @@ Case** moves_possibles(Drone *d, int *nbCases){
                     C = NULL;
                 break;
         }
-        if (C != NULL && C->state == CASE_VIDE){
+        if (C != NULL){
             cases[indCases] = C;
             indCases++;
         }
