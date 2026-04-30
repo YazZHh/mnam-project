@@ -3,6 +3,8 @@
 #include "drone.h"
 
 int main(int argc, char *argv[]){
+    srand(time(NULL));
+
     Grille *g;
     if (argc == 2){
         FILE* f = fopen(argv[1], "r");
@@ -10,6 +12,7 @@ int main(int argc, char *argv[]){
             printf("Erreur lors de l'ouverture du fichier de la carte !\n");
             return -1;
         }
+        printf("Lecture du fichier...\n");
         g = init_grille_file(f);
     } else {
         int tailleX, tailleY, obstacle_prob;
@@ -28,16 +31,16 @@ int main(int argc, char *argv[]){
             printf("ordonnée : ");
             scanf("%d", &tailleY);
         }
-        printf("Choisissez une probabilité de cases Danger/Obstacles (1 min, 100 max): ");
+        printf("Choisissez une probabilité de cases Danger/Obstacles (1 min, 100 max) : ");
         scanf("%d", &obstacle_prob);
         while (obstacle_prob < 1 || obstacle_prob > 100){
             printf("Entrée incorrecte ! (1 min, 100 max)\n");
-            printf("Choisissez une probabilité de cases Danger/Obstacles (1 min, 100 max): ");
+            printf("Choisissez une probabilité de cases Danger/Obstacles (1 min, 100 max) : ");
             scanf("%d", &obstacle_prob);
         }
         g = init_grille(tailleX, tailleY, obstacle_prob);
     }
-    srand(time(NULL));
+
     Drone *d = init_drone(g);
 
     int mode;
@@ -148,6 +151,9 @@ int main(int argc, char *argv[]){
             }
         }
     } else if (mode == 2){
+        printf("\nVoici la grille générée :\n");
+        afficher_grille_drone(d);
+        printf("\n");
         char* filename = malloc(sizeof(char)*100);
         printf("Entrez le nom du fichier d'instructions que vous souhaitez utiliser : ");
         scanf("%s", filename);
@@ -161,7 +167,7 @@ int main(int argc, char *argv[]){
         bool error = false;
         bool wrong_action = false;
         while (!feof(f) && !error && !wrong_action){
-            afficher_grille_drone(d);
+            printf("\n");
             fscanf(f, "%d", &action);            
             printf("action : %d\n", action);
             switch (action){
@@ -183,7 +189,7 @@ int main(int argc, char *argv[]){
                             else
                                 error = true;
                             if (!error){
-                                printf("nextX: %d, nextY: %d\n", nextX, nextY);
+                                printf("nextX : %d, nextY : %d\n", nextX, nextY);
                                 move_step(d, nextX, nextY);
                             }
                             
@@ -227,6 +233,7 @@ int main(int argc, char *argv[]){
                     error = true;
                     break;
             }
+            afficher_grille_drone(d);
         }
 
         if (error)
@@ -236,6 +243,10 @@ int main(int argc, char *argv[]){
         fclose(f);
         free(filename);
     } else if (mode == 3){
+        printf("\nVoici la grille générée :\n");
+        afficher_grille_drone(d);
+        printf("\n");
+
         char* filename = malloc(sizeof(char)*100);
         printf("Entrez le nom du fichier de transitions que vous souhaitez utiliser : ");
         scanf("%s", filename);
@@ -245,10 +256,29 @@ int main(int argc, char *argv[]){
             printf("Erreur d'accès au fichier des transitions !\n");
             return -1;
         }
+
+        long maxDepth, maxBreath;
+        printf("MaxDepth ? : ");
+        scanf("%ld", &maxDepth);
+        while (maxDepth < 1){
+            printf("Entrée incorrecte !\n");
+            printf("MaxDepth ? : ");
+            scanf("%ld", &maxDepth);
+        }
+        printf("MaxBreath ? : ");
+        scanf("%ld", &maxBreath);
+        while (maxBreath < 1){
+            printf("Entrée incorrecte !\n");
+            printf("MaxBreath ? : ");
+            scanf("%ld", &maxBreath);
+        }
+
         fprintf(f, "Format du fichier:\nid état courant;\tid action;\tX suiv;\tYsuiv;\tid état suivant;\trécompense;\tprobabilité\n\n");
         StateList *sl = init_statelist();
         State *s = init_state_drone(d);
-        explore(g, sl, s, 50, 20, f);
+
+        printf("\nCalcul des états et des transitions...\n");
+        explore(g, sl, s, maxDepth, maxBreath, f);
         printf("Nombre d'états de la liste d'états : %d\n", sl->nbstates);
         fclose(f);
 
