@@ -38,7 +38,7 @@ Grille *init_grille(int x, int y, int obstacle_probability){
             else
                 g->tab[i][j].zone = ZONE_4;
             int obstacle = rand()%100 + 1;
-            if (obstacle<obstacle_probability && i != 0 && j != 0)
+            if (obstacle<=obstacle_probability && i != 0 && j != 0)
                 g->tab[i][j].state = CASE_DANGER;
             else
                 g->tab[i][j].state = CASE_VIDE;

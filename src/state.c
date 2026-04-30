@@ -116,6 +116,8 @@ void explore(Grille *g, StateList *sl, State *s, int maxDepth, int maxBreadth, F
     
     append_state(sl, s);
     int id_s = sl->nbstates-1;
+    if (id_s > MAX_STATES)
+        return;
 
     if (maxDepth != -1 && maxDepth <= 0)
         return;

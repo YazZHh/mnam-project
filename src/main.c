@@ -31,9 +31,9 @@ int main(int argc, char *argv[]){
             printf("ordonnée : ");
             scanf("%d", &tailleY);
         }
-        printf("Choisissez une probabilité de cases Danger/Obstacles (1 min, 100 max) : ");
+        printf("Choisissez une probabilité de cases Danger/Obstacles (0 min, 100 max) : ");
         scanf("%d", &obstacle_prob);
-        while (obstacle_prob < 1 || obstacle_prob > 100){
+        while (obstacle_prob < 0 || obstacle_prob > 100){
             printf("Entrée incorrecte ! (1 min, 100 max)\n");
             printf("Choisissez une probabilité de cases Danger/Obstacles (1 min, 100 max) : ");
             scanf("%d", &obstacle_prob);
